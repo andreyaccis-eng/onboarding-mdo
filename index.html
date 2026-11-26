@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding MDO Assessoria</title>
+<link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rose:#f50266; --amber:#1cc6d8; --ink:#0a0809; --panel:#151214; --panel2:#1d191b;
+    --line:#3a3236; --txt:#f5f1f3; --mute:#9b9196; --white:#ffffff; --soft:#f4f2f3; --lineL:#e4dfe2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--ink);color:var(--txt);font-family:Inter,system-ui,-apple-system,sans-serif;overflow:hidden}
+  h1,h2,h3{font-weight:800;letter-spacing:-.025em;line-height:1.02}
+  .deck{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--ink)}
+
+  /* barra superior e inferior */
+  .topbar,.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:var(--ink);border-color:#2a2326;transition:background .35s}
+  .topbar{border-bottom:1px solid #2a2326}
+  .nav{border-top:1px solid #2a2326}
+  .topbar.light,.nav.light{background:var(--white);border-color:var(--lineL)}
+  .logo{height:34px;width:auto;display:block}
+  .counter{font-size:12px;letter-spacing:.2em;color:var(--mute);font-weight:600}
+  .progress{height:3px;background:#2a2326}
+  .progress i{display:block;height:100%;width:0;background:var(--rose);transition:width .4s}
+
+  /* slides */
+  .slides{flex:1;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;overflow-y:auto;padding:56px clamp(22px,7vw,110px);opacity:0;visibility:hidden;transform:translateX(26px);transition:opacity .35s,transform .35s,visibility .35s}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide > *{position:relative;z-index:1}
+
+  /* fundo escuro com foto */
+  .photo{background:var(--ink);color:var(--txt)}
+  .photo::before{content:"";position:absolute;inset:0;z-index:0;background:
+      linear-gradient(90deg,rgba(10,8,9,.96) 30%,rgba(10,8,9,.6) 100%),
+      radial-gradient(ellipse at 88% 12%,rgba(245,2,102,.24),transparent 55%),
+      radial-gradient(ellipse at 8% 96%,rgba(28,198,216,.16),transparent 50%),
+      repeating-linear-gradient(90deg,transparent 0 79px,rgba(255,255,255,.025) 80px)}
+
+  /* fundo branco */
+  .white{background:var(--white);color:var(--ink)}
+  .white .bgimg{position:absolute;inset:0;z-index:0;background:
+      radial-gradient(ellipse at 100% 0%,rgba(245,2,102,.10),transparent 50%),
+      radial-gradient(ellipse at 0% 100%,rgba(28,198,216,.12),transparent 45%),
+      repeating-linear-gradient(90deg,transparent 0 79px,rgba(10,8,9,.035) 80px)}
+
+  .eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:14px;color:var(--rose)}
+  .white .eyebrow{color:var(--rose)}
+  .title{font-size:clamp(40px,6vw,80px);margin-bottom:18px}
+  .title .t1{display:block;font-size:.5em;font-weight:600;color:var(--mute);letter-spacing:-.01em;margin-bottom:6px}
+  .white .title .t1{color:#6b6469}
+  .title .t2{display:block;color:var(--rose)}
+  .title .t2.am{color:var(--amber)}
+  .lead{font-size:17px;line-height:1.6;max-width:760px;margin-bottom:26px;color:#d9d2d6}
+  .white .lead{color:#3a3438}
+  .bar2{display:flex;height:4px;width:120px;margin:0 0 22px;border-radius:2px;overflow:hidden}
+  .bar2 i{flex:1} .bar2 i:nth-child(1){background:var(--rose)} .bar2 i:nth-child(2){background:var(--txt)} .bar2 i:nth-child(3){background:var(--amber)}
+  .white .bar2 i:nth-child(2){background:var(--ink)}
+
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));max-width:1120px}
+  .card{border-radius:14px;padding:24px;border:1px solid var(--line);background:rgba(21,18,20,.85);backdrop-filter:blur(4px)}
+  .white .card{background:var(--white);border-color:var(--lineL);box-shadow:0 8px 30px rgba(10,8,9,.06)}
+  .card h3{font-size:22px;margin-bottom:8px;color:#fff}
+  .white .card h3{color:var(--ink)}
+  .card p{font-size:15px;line-height:1.6;color:#d4cdd1}
+  .white .card p{color:#3a3438}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:6px;margin-bottom:12px;color:#fff;background:var(--rose)}
+  .tag.am{background:var(--amber);color:#06262b}
+
+  /* equipe com fotos */
+  .team{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:1120px}
+  .person{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .white .person{background:var(--white);border-color:var(--lineL);box-shadow:0 8px 30px rgba(10,8,9,.06)}
+  .person img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+  .person .pi{padding:18px 20px 20px}
+  .person h3{font-size:22px;color:#fff}
+  .white .person h3{color:var(--ink)}
+  .person .role{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);margin:6px 0 10px}
+  .person ul{list-style:none;font-size:14px;line-height:1.7;color:#d4cdd1}
+  .white .person ul{color:#3a3438}
+  .person li::before{content:"• ";color:var(--amber)}
+
+  /* vídeo */
+  .video{position:relative;max-width:880px;aspect-ratio:16/9;background:#050506;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:24px;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+  .video .play{width:72px;height:72px;border-radius:50%;background:var(--rose);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:#fff;box-shadow:0 0 0 10px rgba(245,2,102,.18)}
+  .video .vt{font-size:22px;font-weight:700}
+  .video small{display:block;color:var(--mute);font-size:13px;margin-top:6px}
+
+  .btn{display:inline-block;border:0;cursor:pointer;background:var(--rose);color:#fff;padding:12px 20px;border-radius:8px;font:600 13px Inter,sans-serif;margin:4px 6px 4px 0}
+  .btn.am{background:var(--amber);color:#06262b}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  .btn.ghost:disabled{opacity:.35;cursor:default}
+  .white .btn.ghost,.nav.light .btn.ghost{color:var(--ink);border-color:#cfc8cc}
+  .nav.light .btn.ghost:disabled{color:#b5adb1}
+
+  .dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .dot{width:9px;height:9px;border-radius:50%;background:#3a3236;border:0;cursor:pointer}
+  .dot.on{background:var(--rose)}
+  .nav.light .dot{background:#d8d2d5} .nav.light .dot.on{background:var(--rose)}
+
+  .acc{max-width:880px;display:grid;gap:10px}
+  .acc details{border-radius:12px;padding:16px 20px;border:1px solid var(--line);background:rgba(21,18,20,.9)}
+  .white .acc details{background:var(--white);border-color:var(--lineL)}
+  .acc summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none}
+  .acc summary::-webkit-details-marker{display:none}
+  .acc summary::after{content:"+";float:right;color:var(--rose);font-size:20px;line-height:1}
+  .acc details[open] summary::after{content:"–"}
+  .acc details p{margin-top:10px;line-height:1.6;font-size:15px;color:#d4cdd1}
+  .white .acc details p{color:#3a3438}
+
+  .funnel{display:grid;gap:10px;max-width:920px}
+  .fstage{border-radius:10px;padding:16px 22px;cursor:pointer;background:rgba(21,18,20,.9);border:1px solid var(--line);border-left:6px solid var(--amber)}
+  .fstage:nth-child(n+4){border-left-color:var(--rose)}
+  .fstage h3{font-size:18px;color:#fff}
+  .fstage .detail{display:none;margin-top:10px;font-size:15px;line-height:1.6;color:#d4cdd1}
+  .fstage.open .detail{display:block}
+  .fstage .detail b{color:#fff}
+
+  .check{display:flex;align-items:flex-start;gap:12px;border-radius:10px;padding:14px 18px;margin-bottom:10px;max-width:900px;cursor:pointer;background:var(--white);border:1px solid var(--lineL)}
+  .check input{margin-top:4px;width:18px;height:18px;accent-color:var(--rose)}
+  .check span{font-size:15px;line-height:1.5;color:var(--ink)}
+  .check.done span{text-decoration:line-through;color:#8c848a}
+
+  .quiz{max-width:900px;background:var(--white);border:1px solid var(--lineL);border-radius:14px;padding:24px;color:var(--ink);position:relative;z-index:1}
+  .quiz p.q{font-weight:700;margin-bottom:10px}
+  .quiz label{display:block;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:15px}
+  .quiz label:hover{background:#f1eef0}
+  .result{margin-top:16px;padding:16px;border-left:4px solid var(--amber);background:#eaf9fb;border-radius:6px;font-size:15px;line-height:1.6;display:none;color:var(--ink)}
+
+  .slotbox{background:rgba(21,18,20,.9);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:520px;margin-top:22px}
+  .slotbox h3{font-size:22px;margin-bottom:6px;color:#fff}
+  .slotbox p{color:#d4cdd1;font-size:15px}
+  .white .input{background:#fff;color:var(--ink);border-color:#cfc8cc}
+  .input{width:100%;max-width:420px;padding:12px;border:1px solid var(--line);border-radius:8px;font:15px Inter,sans-serif;margin-top:8px;background:var(--panel2);color:var(--txt)}
+
+  .meta{display:grid;gap:12px;max-width:920px}
+  .meta .row{display:grid;grid-template-columns:150px 1fr;gap:18px;background:var(--white);border:1px solid var(--lineL);border-radius:12px;padding:18px 22px;align-items:start;border-left:6px solid var(--rose)}
+  .meta .row:nth-child(2){border-left-color:var(--ink)} .meta .row:nth-child(3){border-left-color:var(--amber)}
+  .meta .row b{font-size:24px;font-weight:800;color:var(--ink);line-height:1.1}
+  .meta .row p{font-size:15px;line-height:1.6;color:#3a3438}
+
+  .ph{background:rgba(28,198,216,.18);border:1px dashed var(--amber);padding:1px 6px;border-radius:4px;font-size:14px;color:#0b6f7c}
+  .white .ph{color:#0b6f7c}
+
+  /* marca d'água em contorno e anéis, como na capa do PDF */
+  .wm{position:absolute;right:-3vw;top:4%;font:800 40vw/0.8 Inter,sans-serif;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:1px rgba(245,2,102,.32);pointer-events:none;z-index:0;white-space:nowrap;user-select:none}
+  .wm.cy{top:18%;right:-6vw;-webkit-text-stroke:1px rgba(28,198,216,.22)}
+  .rings{position:absolute;left:-160px;bottom:-160px;width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:0;
+    background:repeating-radial-gradient(circle,transparent 0 58px,rgba(28,198,216,.13) 59px 60px)}
+  .tagline{display:flex;gap:14px;align-items:stretch;margin:0 0 26px;font-size:15px;letter-spacing:.28em;text-transform:uppercase;font-weight:600;color:#d9d2d6}
+  .tagline::before{content:"";width:4px;background:linear-gradient(180deg,var(--rose) 50%,var(--amber) 50%);border-radius:2px}
+  .tagline b{color:var(--amber);font-weight:700}
+  /* briefing */
+  .fin{width:100%;padding:12px 14px;border:1px solid var(--lineL);border-radius:8px;font:15px Inter,sans-serif;background:#fff;color:var(--ink)}
+  textarea.fin{min-height:84px;resize:vertical}
+  .qblock{background:var(--white);border:1px solid var(--lineL);border-radius:12px;padding:20px 22px;margin-bottom:14px;max-width:920px;box-shadow:0 8px 30px rgba(10,8,9,.05)}
+  .qblock h3{font-size:18px;margin-bottom:12px;color:var(--ink)}
+  .qblock .sub{font-size:13px;color:#6b6469;margin:10px 0 6px}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--lineL);border-radius:999px;font-size:14px;cursor:pointer;color:var(--ink);background:#fff}
+  .opt:has(input:checked){background:var(--rose);border-color:var(--rose);color:#fff}
+  .opt input{accent-color:var(--rose)}
+  .opt:has(input:checked) input{accent-color:#fff}
+  .copymsg{font-size:14px;color:#3a3438;margin-top:10px}
+  /* fundos decorativos, só nas cores rosa, azul e branco */
+  .art{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+  .art .om{position:absolute;font:800 38vw/0.8 Inter,sans-serif;letter-spacing:-.05em;color:transparent;white-space:nowrap;user-select:none}
+  .dk1 .om{right:-4vw;top:10%;font-size:22vw;-webkit-text-stroke:1px rgba(245,2,102,.3)}
+  .plain{background:#111113}
+  .plain::before,.plain::after{display:none}
+  .cover-v1{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;font-size:clamp(56px,9vw,120px);line-height:.95;letter-spacing:.02em;text-transform:uppercase;margin-bottom:22px}
+  .cover-v1 em{font-style:normal;color:var(--rose)}
+  .om-img{position:absolute;right:-3vw;top:12%;width:52vw;height:auto;opacity:.9;pointer-events:none}
+  .dkold .om{right:-3vw;top:4%;font-size:40vw;-webkit-text-stroke:1px rgba(245,2,102,.32)}
+  .dkold::before{content:"";position:absolute;left:-160px;bottom:-160px;width:520px;height:520px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 58px,rgba(28,198,216,.13) 59px 60px)}
+  .cover-t .t1{letter-spacing:.42em;text-transform:uppercase;font-size:.36em;font-weight:500;color:#c9c2c6;margin-bottom:10px}
+  .cover-t .t2 b{font-weight:800}
+  .cover-t .t2 .pk{color:var(--rose)} .cover-t .t2 .cy{color:var(--cyan)}
+  .dk1::before{content:"";position:absolute;right:-160px;bottom:-160px;width:560px;height:560px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 58px,rgba(28,198,216,.14) 59px 60px)}
+  .dk2 .om{left:-4vw;bottom:-12vw;font-size:46vw;-webkit-text-stroke:1px rgba(28,198,216,.26)}
+  .dk2::before{content:"";position:absolute;right:-120px;top:-120px;width:440px;height:440px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 46px,rgba(245,2,102,.16) 47px 48px)}
+  .dk2::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0,rgba(245,2,102,.16),transparent 55%)}
+  .dk3 .om{right:8vw;top:-4vw;font-size:30vw;-webkit-text-stroke:1px rgba(245,2,102,.24)}
+  .dk3::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 59px,rgba(255,255,255,.035) 60px)}
+  .dk4 .om{left:50%;top:50%;transform:translate(-50%,-50%);font-size:34vw;-webkit-text-stroke:1px rgba(255,255,255,.07)}
+  .dk4::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 58%,rgba(28,198,216,.10) 58.5%,transparent 62%)}
+  .dk4::after{content:"";position:absolute;right:0;bottom:0;width:38vw;height:38vw;border-radius:50%;background:repeating-radial-gradient(circle at 100% 100%,transparent 0 40px,rgba(28,198,216,.12) 41px 42px)}
+  .dk5 .om{right:-6vw;bottom:-10vw;font-size:42vw;-webkit-text-stroke:1px rgba(28,198,216,.24)}
+  .dk5::before{content:"";position:absolute;left:0;top:0;width:100%;height:5px;background:linear-gradient(90deg,var(--rose) 0 40%,#fff 40% 60%,var(--amber) 60%)}
+  .dk5::after{content:"";position:absolute;left:-200px;top:-200px;width:520px;height:520px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 58px,rgba(245,2,102,.12) 59px 60px)}
+  .wh1{background:linear-gradient(160deg,#ffffff 0%,#eeeef1 100%)}
+  .wh1 .om{right:-2vw;top:8%;font-size:40vw;-webkit-text-stroke:1px rgba(245,2,102,.35)}
+  .wh1::before{content:"";position:absolute;right:-180px;top:-180px;width:560px;height:560px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 58px,rgba(28,198,216,.22) 59px 60px)}
+  .wh1::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 79px,rgba(10,8,9,.035) 80px),repeating-linear-gradient(0deg,transparent 0 79px,rgba(10,8,9,.035) 80px)}
+  .wh2{background:#ffffff}
+  .wh2 .om{left:-3vw;bottom:-14vw;font-size:44vw;-webkit-text-stroke:1px rgba(28,198,216,.32)}
+  .wh2::before{content:"";position:absolute;left:-180px;bottom:-180px;width:540px;height:540px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 56px,rgba(245,2,102,.18) 57px 58px)}
+  .wh2::after{content:"";position:absolute;right:0;top:0;width:34%;height:100%;background:linear-gradient(180deg,transparent,rgba(245,2,102,.05))}
+  .wh3{background:radial-gradient(ellipse at 50% 40%,#fff 0%,#ececef 100%)}
+  .wh3 .om{left:50%;top:46%;transform:translate(-50%,-50%);font-size:30vw;-webkit-text-stroke:1px rgba(10,8,9,.09)}
+  .wh3::before{content:"";position:absolute;left:50%;top:46%;width:90vw;height:90vw;max-width:900px;max-height:900px;transform:translate(-50%,-50%);border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 70px,rgba(10,8,9,.035) 71px 72px)}
+  .wh3::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:4px;background:linear-gradient(90deg,var(--rose) 0 50%,var(--amber) 50%)}
+  .wh4{background:linear-gradient(135deg,#fafafb 0%,#eaeaee 100%)}
+  .wh4 .om{right:6vw;bottom:-6vw;font-size:26vw;-webkit-text-stroke:1px rgba(28,198,216,.35)}
+  .wh4::before{content:"";position:absolute;left:-120px;top:-120px;width:420px;height:420px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 40px,rgba(245,2,102,.14) 41px 42px)}
+  .wh4::after{content:"";position:absolute;left:12%;top:0;width:2px;height:100%;background:linear-gradient(180deg,transparent,rgba(10,8,9,.08),transparent)}
+  /* slide de agradecimento, no estilo da página de encerramento do PDF */
+  .thx{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+  .thx-mdo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:800 36vw/0.8 Inter,sans-serif;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:1px rgba(245,2,102,.3);white-space:nowrap;z-index:0;pointer-events:none}
+  .thx-txt{position:relative;z-index:1;font-family:Inter,system-ui,sans-serif;font-style:normal;font-weight:500;font-size:clamp(20px,2.6vw,34px);line-height:1.55;color:#1a1a1d;max-width:880px}
+  .thx-txt .m{color:var(--rose);font-style:normal;font-weight:800}
+  .thx-txt .d{color:#4a4a50;font-style:normal;font-weight:800}
+  .thx-txt .o{color:var(--cyan);font-style:normal;font-weight:800}
+  .thx-bar{position:relative;z-index:1;display:flex;width:120px;height:4px;margin-top:28px}
+  .thx-bar i{flex:1} .thx-bar i:nth-child(1){background:var(--rose)} .thx-bar i:nth-child(2){background:#fff;box-shadow:inset 0 0 0 1px #d6d2d5} .thx-bar i:nth-child(3){background:var(--cyan)}
+  @media (max-width:700px){
+    .slide{padding:28px 18px} .meta .row{grid-template-columns:1fr}
+    .topbar,.nav{padding:10px 14px} .logo{height:26px}
+  }
+
+  /* painel admin */
+  .adm-open{position:fixed;top:14px;right:16px;z-index:60;background:var(--rose);color:#fff;border:0;border-radius:999px;padding:8px 16px;font:700 13px Inter,sans-serif;cursor:pointer}
+  .adm{position:fixed;inset:0;z-index:70;background:#fff;color:var(--ink);overflow:auto;font-family:Inter,system-ui,sans-serif}
+  .adm[hidden]{display:none}
+  .adm-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:16px 28px;border-bottom:1px solid #e6e0e3;position:sticky;top:0;background:#fff;z-index:2}
+  .adm-brand{font-weight:800;color:var(--rose);font-size:16px}
+  .adm-body{max-width:1100px;margin:0 auto;padding:28px}
+  .adm-body h2{font-size:28px;margin-bottom:6px;color:var(--ink)}
+  .adm-body h3{font-size:16px;margin:28px 0 12px;color:var(--ink)}
+  .adm-sub{color:#6b6469;font-size:14px}
+  .adm-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px}
+  .adm-stat{flex:1;min-width:160px;border:1px solid #e6e0e3;border-radius:12px;padding:14px 16px}
+  .adm-stat b{display:block;font-size:26px;color:var(--rose)}
+  .adm-grid{display:flex;gap:16px;flex-wrap:wrap}
+  .adm-card{width:140px;text-align:center;cursor:pointer;border:1px solid #e6e0e3;border-radius:14px;padding:14px 8px}
+  .adm-card:hover{border-color:var(--rose)}
+  .adm-card.on{border-color:var(--rose);background:#fff0f5}
+  .adm-card img,.adm-card .av{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid var(--rose);margin:0 auto;display:block;background:#f3eef0}
+  .adm-card .n{font-weight:700;margin-top:8px}
+  .adm-card .c{font-size:12px;color:#6b6469}
+  .adm-input,.adm-sel{padding:10px 12px;border:1px solid #cfc8cc;border-radius:10px;font:15px Inter,sans-serif;color:var(--ink);background:#fff}
+  .adm-input{width:100%}
+  .adm-row{padding:12px 14px;border:1px solid #e6e0e3;border-radius:10px;margin-top:8px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;color:var(--ink)}
+  .adm-row:hover{border-color:var(--rose)}
+  .adm-row small{color:#6b6469}
+  .adm-det{margin-top:22px;border:1px solid #e6e0e3;border-radius:14px;padding:20px}
+  .adm-det[hidden]{display:none}
+  .adm-det pre{white-space:pre-wrap;font:14px/1.6 Inter,sans-serif;background:#faf7f8;border-radius:10px;padding:14px;margin-top:12px;color:var(--ink)}
+  .adm-x{background:#fff;border:1px solid #cfc8cc;border-radius:8px;padding:8px 12px;cursor:pointer;font:14px Inter,sans-serif;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="topbar" id="top">
+    <img class="logo" src="logo-mdo-branca.png" alt="MDO Assessoria">
+  </div>
+  <div class="progress"><i id="bar"></i></div>
+
+  <div class="slides" id="slides">
+
+    <!-- 1. BOAS-VINDAS -->
+    <section class="slide photo active" data-title="Boas-vindas">
+      <div class="eyebrow">Passo 1 · Boas-vindas</div>
+      <h1 class="title cover-t"><span class="t1">Manual de</span><span class="t2"><b class="pk">BOAS-</b><b class="cy">VINDAS</b></span></h1>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Este é o seu guia de início. Em cerca de 10 minutos você entende como trabalhamos, quem fala com você, o que precisamos de você e o que esperar nos próximos 90 dias.</p>
+      <div class="video">
+        <div>
+          <div class="play">▶</div>
+          <div class="vt">Vídeo de boas-vindas</div>
+          <small>Espaço reservado · substituir pelo vídeo gravado (2 a 3 min)</small>
+        </div>
+      </div>
+      <div class="tagline">O nosso negócio é <b>fazer o seu decolar.</b></div>
+      <p class="lead" style="font-size:14px;color:var(--mute)">Use as setas do teclado, toque ou deslize para avançar.</p>
+    </section>
+
+    <!-- 1B. AGRADECIMENTO (segundo slide) -->
+    <section class="slide white thx" data-title="Agradecimento">
+      <div class="thx-txt">Mais uma vez agradecemos a confiança em escolher a <span class="m">M</span><span class="d">D</span><span class="o">O</span> para cuidar do Gerenciamento dos seus Marketplaces.<br>Juntos faremos um grande trabalho.</div>
+      <div class="thx-bar"><i></i><i></i><i></i></div>
+    </section>
+
+    <!-- 2. QUEM É QUEM -->
+    <section class="slide white" data-title="Quem é quem">
+      <div class="bgimg" style="--img:url(bg-008.jpg)"></div>
+      <div class="eyebrow">Passo 2 · Equipe</div>
+      <h2 class="title"><span class="t1">Quem cuida do</span><span class="t2">seu projeto</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Cada área tem um propósito. Você fala com o seu gestor no dia a dia e com os sócios nas decisões estratégicas.</p>
+      <div class="team">
+        <div class="person"><img src="bg-009.jpg" alt="Thiago"><div class="pi"><span class="tag">Sócio · Comercial</span><h3>Thiago</h3><ul><li>Relacionamento comercial</li><li>Expansão de projetos</li><li>Estratégias de crescimento</li><li>Negociações comerciais</li></ul></div></div>
+        <div class="person"><img src="bg-010.jpg" alt="Andrey"><div class="pi"><span class="tag">Sócio · Operacional</span><h3>Andrey</h3><ul><li>Operação do projeto</li><li>Prazos e entregas</li><li>Resolução de problemas</li><li>Comunicação e financeiro</li></ul></div></div>
+        <div class="person"><img src="bg-011.jpg" alt="Luiz Otávio"><div class="pi"><span class="tag am">Head de Tráfego Pago</span><h3>Luiz Otávio</h3><ul><li>Estratégia de mídia paga</li><li>Gestão das campanhas</li><li>Otimizações diárias</li><li>Escala e performance</li></ul></div></div>
+      </div>
+      <div class="card" style="margin-top:18px;max-width:1120px"><h3>Seu gestor</h3><p>Atende você no WhatsApp no dia a dia. Nome e número: <span class="ph">[preencher]</span></p></div>
+    </section>
+
+    <!-- GESTORES E CLIENTES SALVOS -->
+    <section class="slide white" data-title="Gestores">
+      <div class="eyebrow">Equipe · Cadastro</div>
+      <h2 class="title"><span class="t1">Gestores e</span><span class="t2">clientes salvos</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Cada gestor cadastra o próprio nome e foto. Os briefings e onboardings dos clientes ficam salvos aqui para consulta.</p>
+      <div class="qblock">
+        <h3>Cadastro do gestor</h3>
+        <div class="sub">Nome</div><input class="input" id="gNome" placeholder="Seu nome">
+        <div class="sub">Foto (quadrada, de preferência)</div><input class="input" type="file" id="gFoto" accept="image/*">
+        <div><button class="btn" id="gSalvar">Salvar gestor</button> <span class="copymsg" id="gMsg"></span></div>
+      </div>
+      <div class="qblock">
+        <h3>Gestores cadastrados</h3>
+        <div id="gLista" style="display:flex;gap:18px;flex-wrap:wrap"></div>
+      </div>
+      <div class="qblock">
+        <h3>Salvar cliente</h3>
+        <div class="sub">Nome do cliente</div><input class="input" id="cNome" placeholder="Nome do cliente">
+        <div class="sub">Gestor responsável</div><select class="input" id="cGestor"></select>
+        <div class="sub">Salva as respostas do briefing e o checklist de onboarding deste navegador.</div>
+        <div><button class="btn" id="cSalvar">Salvar briefing e onboarding</button> <span class="copymsg" id="cMsg"></span></div>
+      </div>
+      <div class="qblock">
+        <h3>Clientes salvos</h3>
+        <div id="cLista"></div>
+      </div>
+    </section>
+
+    <!-- 3. ROTINA -->
+    <section class="slide photo" style="--img:url(bg-001.jpg)" data-title="Rotina">
+      <div class="eyebrow">Passo 3 · Ritmo de trabalho</div>
+      <h2 class="title"><span class="t1">Como será a</span><span class="t2">rotina?</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Organização, alinhamento e foco em resultado. Estes são os encontros fixos.</p>
+      <div class="grid">
+        <div class="card"><span class="tag am">Toda semana</span><h3>Seg, qua e sexta</h3><p>Conversas de acompanhamento com o seu gestor, de forma recorrente e também quando você precisar.</p></div>
+        <div class="card"><span class="tag">Semanal</span><h3>Reunião de estratégia</h3><p>Alinhamento de estratégias e consultoria. Você escolhe o melhor dia e horário logo abaixo.</p></div>
+        <div class="card"><span class="tag">Todo dia</span><h3>Execução</h3><p>Trabalhamos diariamente nas campanhas e ofertas. Para isso, precisamos de você presente no processo: responder rápido e enviar o que for pedido.</p></div>
+      </div>
+      <div class="slotbox">
+        <h3>Seu horário ideal</h3>
+        <p>Escolha um dia e um horário para a reunião semanal:</p>
+        <input class="input" id="slot" placeholder="Ex.: Quinta, 10h" maxlength="80">
+        <div style="margin-top:12px"><button class="btn" id="saveSlot">Salvar sugestão</button> <span id="slotMsg" style="font-size:14px;color:var(--mute)"></span></div>
+      </div>
+    </section>
+
+    <!-- 4. DIAGNÓSTICO -->
+    <section class="slide white" data-title="Diagnóstico">
+      <div class="bgimg" style="--img:url(bg-007.jpg)"></div>
+      <div class="eyebrow">Passo 4 · Diagnóstico rápido</div>
+      <h2 class="title"><span class="t1">Onde você</span><span class="t2">está hoje</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Responda três perguntas. Assim sabemos por onde começar.</p>
+      <div class="quiz" id="quiz">
+        <p class="q">1. Como está o seu volume de vendas nos últimos 30 dias?</p>
+        <label><input type="radio" name="q1" value="a"> Caiu ou está parado</label>
+        <label><input type="radio" name="q1" value="b"> Oscila bastante</label>
+        <label><input type="radio" name="q1" value="c"> Cresce de forma constante</label>
+        <p class="q" style="margin-top:16px">2. Seus anúncios estão ativos hoje?</p>
+        <label><input type="radio" name="q2" value="a"> Não, estou sem anúncios</label>
+        <label><input type="radio" name="q2" value="b"> Sim, mas sem acompanhamento</label>
+        <label><input type="radio" name="q2" value="c"> Sim, com acompanhamento regular</label>
+        <p class="q" style="margin-top:16px">3. Quantas avaliações você tem na loja?</p>
+        <label><input type="radio" name="q3" value="a"> Poucas ou nenhuma</label>
+        <label><input type="radio" name="q3" value="b"> Algumas, mas abaixo do ideal</label>
+        <label><input type="radio" name="q3" value="c"> Muitas e com boa nota</label>
+        <div style="margin-top:16px"><button class="btn" id="quizBtn">Ver meu diagnóstico</button></div>
+        <div class="result" id="quizRes"></div>
+      </div>
+    </section>
+
+    <!-- 5. FUNIL -->
+    <section class="slide photo" style="--img:url(bg-002.jpg)" data-title="Funil de vendas">
+      <div class="eyebrow">Passo 5 · Método</div>
+      <h2 class="title"><span class="t1">Funil de</span><span class="t2">vendas</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Cada etapa é essencial para gerar resultados consistentes e escaláveis. Toque em cada etapa para ver o que a MDO faz e o que você faz.</p>
+      <div class="funnel">
+        <div class="fstage open"><h3>01 · Bom produto e oferta</h3><div class="detail"><b>MDO:</b> analisa a oferta e sugere ajustes de preço, título e foto.<br><b>Você:</b> envia produtos, custos e fotos reais.</div></div>
+        <div class="fstage"><h3>02 · Vendas e avaliações</h3><div class="detail"><b>MDO:</b> acompanha vendas e o pedido de avaliações.<br><b>Você:</b> responde rápido aos compradores e resolve problemas de entrega.</div></div>
+        <div class="fstage"><h3>03 · Ferramentas de marketplace</h3><div class="detail"><b>MDO:</b> usa ofertas relâmpago, cupons, anúncios e promoções com estratégia.<br><b>Você:</b> libera acessos e aprova as ofertas sugeridas.</div></div>
+        <div class="fstage"><h3>04 · Marketing estruturado</h3><div class="detail"><b>MDO:</b> roda campanhas previsíveis com métricas claras.<br><b>Você:</b> acompanha o relatório semanal e tira dúvidas no WhatsApp.</div></div>
+        <div class="fstage"><h3>05 · Muitas vendas</h3><div class="detail"><b>MDO:</b> escala o que está funcionando.<br><b>Você:</b> mantém estoque e prazos em dia para sustentar o volume.</div></div>
+      </div>
+    </section>
+
+    <!-- 6. CHECKLIST -->
+    <section class="slide white" data-title="Pendências">
+      <div class="bgimg" style="--img:url(bg-003.jpg)"></div>
+      <div class="eyebrow">Passo 6 · Checklist</div>
+      <h2 class="title"><span class="t1">O que</span><span class="t2">precisamos de você</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Marque conforme for concluindo. Seu progresso fica salvo neste navegador.</p>
+      <div id="checks" style="max-width:900px"></div>
+      <p style="margin-top:12px;font-size:14px;color:#6b6469" id="checkCount"></p>
+    </section>
+
+    <!-- 7. GLOSSÁRIO -->
+    <section class="slide photo" style="--img:url(bg-004.jpg)" data-title="Glossário">
+      <div class="eyebrow">Passo 7 · Glossário</div>
+      <h2 class="title"><span class="t1">Termos</span><span class="t2 am">que você vai ouvir</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <div class="acc">
+        <details><summary>ROAS</summary><p>Retorno sobre o investimento em anúncios: quanto de faturamento cada real gasto em anúncio gerou. Ex.: ROAS 4 significa R$ 4 vendidos para cada R$ 1 investido.</p></details>
+        <details><summary>Taxa de conversão</summary><p>Percentual de visitas que viram pedido. Ajuda a entender se a loja e a oferta estão convencendo quem chega.</p></details>
+        <details><summary>Ticket médio</summary><p>Valor médio de cada pedido. Faturamento dividido pelo número de pedidos.</p></details>
+        <details><summary>Oferta relâmpago</summary><p>Promoção com preço reduzido por tempo limitado, usada para gerar movimento e vendas rápidas.</p></details>
+        <details><summary>Cupom</summary><p>Desconto com código aplicado no checkout, usado para estimular a compra.</p></details>
+        <details><summary>Funil de vendas</summary><p>Caminho do cliente, da visita à compra. Cada etapa tem um indicador próprio.</p></details>
+        <details><summary>Avaliações</summary><p>Notas e comentários dos compradores. Influenciam a confiança e a posição dos produtos na busca.</p></details>
+      </div>
+    </section>
+
+    <!-- 8. METAS -->
+    <section class="slide white" data-title="Metas 30/60/90">
+      <div class="bgimg" style="--img:url(bg-005.jpg)"></div>
+      <div class="eyebrow">Passo 8 · Expectativas</div>
+      <h2 class="title"><span class="t1">O que esperar nos</span><span class="t2">próximos 90 dias</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Metas combinadas em conjunto e revisadas nas reuniões de estratégia.</p>
+      <div class="meta">
+        <div class="row"><b>30 dias</b><p>Diagnóstico concluído, anúncios estruturados e primeiras ofertas no ar. Meta: <span class="ph">[preencher]</span></p></div>
+        <div class="row"><b>60 dias</b><p>Otimização de campanhas e aumento de avaliações. Meta de faturamento: <span class="ph">[preencher]</span></p></div>
+        <div class="row"><b>90 dias</b><p>Crescimento consistente com ROAS e margem acompanhados. Meta: <span class="ph">[preencher]</span></p></div>
+      </div>
+    </section>
+
+    <!-- 9. FAQ -->
+    <section class="slide photo" style="--img:url(bg-006.jpg)" data-title="Dúvidas e próximos passos">
+      <div class="eyebrow">Passo 9 · Dúvidas</div>
+      <h2 class="title"><span class="t1">Perguntas</span><span class="t2">frequentes</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <div class="acc">
+        <details><summary>Com quem eu falo no dia a dia?</summary><p>Com o seu gestor, pelo WhatsApp. Os sócios entram nas decisões estratégicas.</p></details>
+        <details><summary>Quanto tempo leva para ver resultado?</summary><p>Depende do produto e do histórico da loja. O acompanhamento de 30, 60 e 90 dias mostra a evolução com números.</p></details>
+        <details><summary>Como funciona a comissão?</summary><p><span class="ph">[preencher com a regra oficial do contrato]</span></p></details>
+        <details><summary>E se o mês não bater a meta?</summary><p><span class="ph">[preencher com a regra oficial do contrato]</span></p></details>
+        <details><summary>Posso mudar o dia da reunião?</summary><p>Sim. Basta avisar seu gestor com antecedência.</p></details>
+      </div>
+      <div style="margin-top:24px"><button class="btn" onclick="go(0)">Voltar ao início</button></div>
+    </section>
+
+    <!-- 10. FERRAMENTAS -->
+    <section class="slide photo" data-title="Ferramentas">
+      <div class="eyebrow">Passo 10 · Ferramentas gratuitas</div>
+      <h2 class="title"><span class="t1">Ferramentas que</span><span class="t2">ajudam no dia a dia</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Disponíveis no site da MDO Assessoria, sem custo. Use para decidir preços e organizar a impressão das etiquetas.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="tag">Precificador</span>
+          <h3>Preço, lucro e margem</h3>
+          <p>Calcula preço, lucro e margem já com as taxas de cada marketplace.</p>
+          <p style="margin-top:10px"><b style="color:#fff">Como usar:</b> <span class="ph">[confirmar passos]</span></p>
+          <p style="margin-top:12px"><a href="https://assessoriamdo.com/precificador" target="_blank" rel="noopener" style="color:var(--amber);font-weight:700">assessoriamdo.com/precificador →</a></p>
+        </div>
+        <div class="card">
+          <span class="tag am">Unificador de etiquetas</span>
+          <h3>Um único PDF</h3>
+          <p>Junta todas as etiquetas em um único PDF, pronto para imprimir.</p>
+          <p style="margin-top:10px"><b style="color:#fff">Como usar:</b> <span class="ph">[confirmar passos]</span></p>
+          <p style="margin-top:12px"><a href="https://assessoriamdo.com/unificador" target="_blank" rel="noopener" style="color:var(--amber);font-weight:700">assessoriamdo.com/unificador →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. ROBÔ -->
+    <section class="slide photo" data-title="Robô">
+      <div class="eyebrow">Passo 11 · Robô de ofertas</div>
+      <h2 class="title"><span class="t1">Comandos do</span><span class="t2">robô</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Esta seção será preenchida com os comandos oficiais do robô e o passo a passo de uso, para você usar sem depender de ajuda.</p>
+      <div class="card" style="max-width:920px">
+        <h3>Comandos</h3>
+        <p><span class="ph">[inserir tabela: comando · o que faz · exemplo de uso]</span></p>
+      </div>
+      <div class="card" style="max-width:920px;margin-top:14px">
+        <h3>Passo a passo</h3>
+        <p><span class="ph">[inserir passos de ativação e uso]</span></p>
+      </div>
+    </section>
+
+    <!-- 12. BRIEFING PARTE 1 -->
+    <section class="slide white" data-title="Briefing 1">
+      <div class="bgimg" style="--img:url(bg-001.jpg)"></div>
+      <div class="eyebrow">Passo 12 · Briefing (1 de 2)</div>
+      <h2 class="title"><span class="t1">Vamos conhecer a</span><span class="t2">sua operação</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+      <p class="lead">Responda com calma. Suas respostas ficam salvas neste navegador e você pode copiá-las para enviar ao seu gestor.</p>
+
+      <div class="qblock">
+        <h3>1. Você já vende em algum Marketplace?</h3>
+        <div class="opts"><label class="opt"><input type="radio" name="q1" value="Sim"> Sim</label><label class="opt"><input type="radio" name="q1" value="Não"> Não</label></div>
+        <p class="sub">Se sim, em quais?</p>
+        <div class="opts">
+          <label class="opt"><input type="checkbox" name="q1b" value="Shopee"> Shopee</label>
+          <label class="opt"><input type="checkbox" name="q1b" value="Mercado Livre"> Mercado Livre</label>
+          <label class="opt"><input type="checkbox" name="q1b" value="TikTok Shop"> TikTok Shop</label>
+          <label class="opt"><input type="checkbox" name="q1b" value="Amazon"> Amazon</label>
+          <label class="opt"><input type="checkbox" name="q1b" value="Magalu"> Magalu</label>
+          <label class="opt"><input type="checkbox" name="q1b" value="Shein"> Shein</label>
+        </div>
+        <p class="sub">Outro:</p>
+        <input class="fin" id="q1o" placeholder="Digite aqui">
+      </div>
+
+      <div class="qblock">
+        <h3>2. Suas contas são cadastradas em:</h3>
+        <div class="opts"><label class="opt"><input type="radio" name="q2" value="CPF"> CPF</label><label class="opt"><input type="radio" name="q2" value="CNPJ"> CNPJ</label></div>
+      </div>
+
+      <div class="qblock">
+        <h3>3. Quantos pedidos, em média, sua loja realiza por dia?</h3>
+        <input class="fin" id="q3" placeholder="Ex.: 40">
+      </div>
+
+      <div class="qblock">
+        <h3>4. Pretende vender em outros Marketplaces?</h3>
+        <div class="opts"><label class="opt"><input type="radio" name="q4" value="Sim"> Sim</label><label class="opt"><input type="radio" name="q4" value="Não"> Não</label></div>
+        <p class="sub">Se sim, quais?</p>
+        <input class="fin" id="q4o" placeholder="Ex.: Mercado Livre, TikTok Shop">
+      </div>
+    </section>
+
+    <!-- 11. BRIEFING PARTE 2 -->
+    <section class="slide white" data-title="Briefing 2">
+      <div class="bgimg" style="--img:url(bg-006.jpg)"></div>
+      <div class="eyebrow">Passo 13 · Briefing (2 de 2)</div>
+      <h2 class="title"><span class="t1">Anúncios, materiais</span><span class="t2">e objetivos</span></h2>
+      <div class="bar2"><i></i><i></i><i></i></div>
+
+      <div class="qblock">
+        <h3>5. Você investe em ADS atualmente?</h3>
+        <div class="opts"><label class="opt"><input type="radio" name="q5" value="Sim"> Sim</label><label class="opt"><input type="radio" name="q5" value="Não"> Não</label></div>
+        <p class="sub">Se sim, qual o investimento atual?</p>
+        <input class="fin" id="q5o" placeholder="Ex.: R$ 100">
+      </div>
+
+      <div class="qblock">
+        <h3>6. Qual o investimento diário que pretende realizar?</h3>
+        <input class="fin" id="q6" placeholder="Ex.: R$ 15">
+      </div>
+
+      <div class="qblock">
+        <h3>7. Você já possui materiais dos produtos?</h3>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="q7" value="Fotos"> Fotos</label>
+          <label class="opt"><input type="radio" name="q7" value="Vídeos"> Vídeos</label>
+          <label class="opt"><input type="radio" name="q7" value="Ambos"> Ambos</label>
+          <label class="opt"><input type="radio" name="q7" value="Ainda não possuo"> Ainda não possuo</label>
+        </div>
+        <p class="sub">Existe disponibilidade para produzir novos materiais?</p>
+        <div class="opts"><label class="opt"><input type="radio" name="q7b" value="Sim"> Sim</label><label class="opt"><input type="radio" name="q7b" value="Não"> Não</label></div>
+      </div>
+
+      <div class="qblock">
+        <h3>8. Qual é sua meta de faturamento mensal?</h3>
+        <input class="fin" id="q8" placeholder="Ex.: R$ 50.000">
+      </div>
+
+      <div class="qblock">
+        <h3>9. Qual é sua principal expectativa com o nosso trabalho?</h3>
+        <textarea class="fin" id="q9" placeholder="Ex.: Melhorar as vendas e faturar mais"></textarea>
+      </div>
+
+      <div class="qblock">
+        <h3>10. O que não pode faltar na nossa parceria, além de resultados?</h3>
+        <div class="opts">
+          <label class="opt"><input type="checkbox" name="q10" value="Comunicação"> Comunicação</label>
+          <label class="opt"><input type="checkbox" name="q10" value="Agilidade"> Agilidade</label>
+          <label class="opt"><input type="checkbox" name="q10" value="Estratégias"> Estratégias</label>
+          <label class="opt"><input type="checkbox" name="q10" value="Transparência"> Transparência</label>
+          <label class="opt"><input type="checkbox" name="q10" value="Organização"> Organização</label>
+          <label class="opt"><input type="checkbox" name="q10" value="Suporte"> Suporte</label>
+        </div>
+        <p class="sub">Outro:</p>
+        <input class="fin" id="q10o" placeholder="Digite aqui">
+      </div>
+
+      <div style="margin-top:8px"><button class="btn am" id="copyBrief">Copiar minhas respostas</button> <span class="copymsg" id="copyMsg"></span></div>
+      <textarea class="fin" id="briefOut" style="display:none;margin-top:12px;max-width:920px;min-height:200px" readonly></textarea>
+    </section>
+
+  </div>
+
+  <div class="nav" id="navbar">
+    <button class="btn ghost" id="prev">← Anterior</button>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center"><div class="dots" id="dots"></div><span class="counter" id="counter">1 / 13</span></div>
+    <button class="btn" id="next">Próximo →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var n=slides.length, cur=0;
+  var dots=document.getElementById('dots');
+  slides.forEach(function(_,i){
+    var b=document.createElement('button');b.className='dot';b.setAttribute('aria-label','Ir para etapa '+(i+1));
+    b.onclick=function(){go(i)};dots.appendChild(b);
+  });
+  function go(i){
+    if(i<0)i=0; if(i>n-1)i=n-1; cur=i;
+    slides.forEach(function(s,k){s.classList.toggle('active',k===i); if(k===i)s.scrollTop=0;});
+    [].forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i)});
+    document.getElementById('counter').textContent=(i+1)+' / '+n;
+    document.getElementById('bar').style.width=((i+1)/n*100)+'%';
+    document.getElementById('prev').disabled=(i===0);
+    document.getElementById('next').textContent=(i===n-1)?'Concluir ✓':'Próximo →';
+    var light=slides[i].classList.contains('white');
+    document.getElementById('top').classList.toggle('light',light);
+    document.querySelector('#top .logo').src=light?'logo-rosa.png':'logo-mdo-branca.png';
+    document.getElementById('navbar').classList.toggle('light',light);
+    document.getElementById('counter').style.color=light?'#6b6469':'#9b9196';
+  }
+  window.go=go;
+  document.getElementById('prev').onclick=function(){go(cur-1)};
+  document.getElementById('next').onclick=function(){ if(cur===n-1){go(0);} else go(cur+1)};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){go(cur+1)}
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){go(cur-1)}
+  });
+  var tx=null;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(tx===null)return; var dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){ dx<0?go(cur+1):go(cur-1); } tx=null;
+  });
+
+  function load(k){try{return JSON.parse(localStorage.getItem(k))||null}catch(e){return null}}
+  function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+  var slotIn=document.getElementById('slot');
+  var savedSlot=load('mdo_slot'); if(savedSlot) slotIn.value=savedSlot;
+  document.getElementById('saveSlot').onclick=function(){
+    save('mdo_slot',slotIn.value.trim());
+    document.getElementById('slotMsg').textContent='Salvo neste navegador. Avise seu gestor para confirmar.';
+  };
+
+  var answers={a:0,b:1,c:2};
+  document.getElementById('quizBtn').onclick=function(){
+    var score=0,missing=false;
+    ['q1','q2','q3'].forEach(function(q){
+      var v=document.querySelector('input[name="'+q+'"]:checked');
+      if(!v){missing=true;} else score+=answers[v.value];
+    });
+    var r=document.getElementById('quizRes');
+    if(missing){r.style.display='block';r.textContent='Responda as três perguntas para ver o diagnóstico.';return;}
+    var msg;
+    if(score<=2) msg='Ponto de partida: vamos priorizar a base. Revisar produtos, ativar anúncios com acompanhamento e começar a coletar avaliações.';
+    else if(score<=5) msg='Você já tem base. Vamos focar em otimizar anúncios e ofertas para ganhar consistência nas vendas.';
+    else msg='Boa base. Vamos focar em escala: ampliar o que já funciona e manter o ritmo de avaliações e estoque.';
+    r.style.display='block';r.textContent=msg;
+  };
+
+  [].forEach.call(document.querySelectorAll('.fstage'),function(f){
+    f.addEventListener('click',function(){f.classList.toggle('open')});
+  });
+
+  var items=[
+    'Acessos às contas das plataformas liberados',
+    'Pasta no Drive criada e compartilhada com a equipe',
+    'Lista de produtos com nome, imagens e custo',
+    'Fotos novas dos produtos (quando houver)',
+    'Vídeos dos produtos (quando houver)',
+    'Número de WhatsApp para atendimento confirmado',
+    'Dados de envio e transportadora atuais',
+    'Horário ideal para a reunião semanal sugerido'
+  ];
+  var state=load('mdo_checks')||{};
+  var box=document.getElementById('checks');
+  function renderCount(){
+    var done=items.filter(function(_,i){return state[i]}).length;
+    document.getElementById('checkCount').textContent=done+' de '+items.length+' concluídos';
+  }
+  items.forEach(function(t,i){
+    var lab=document.createElement('label');lab.className='check'+(state[i]?' done':'');
+    var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!state[i];
+    var sp=document.createElement('span');sp.textContent=t;
+    lab.appendChild(cb);lab.appendChild(sp);box.appendChild(lab);
+    cb.onchange=function(){state[i]=cb.checked;lab.classList.toggle('done',cb.checked);save('mdo_checks',state);renderCount();};
+  });
+  renderCount();
+
+  // decoração de capa: marca d'água em contorno e anéis
+  // cada slide recebe um fundo decorativo diferente (rosa, azul e branco)
+  var darkV=['dk1','dk2','dk3','dk4','dk5'], lightV=['wh1','wh2','wh3','wh4'], di=0, li=0;
+  slides.forEach(function(s){
+    var old=s.querySelector('.bgimg'); if(old) old.parentNode.removeChild(old);
+    var a=document.createElement('div');
+    var isDark=s.classList.contains('photo');
+    a.className='art '+(isDark?darkV[di++%darkV.length]:lightV[li++%lightV.length]);
+    a.innerHTML='';
+    s.insertBefore(a,s.firstChild);
+  });
+
+  // briefing: salva, restaura e copia as respostas
+  var brief=load('mdo_brief')||{};
+  function bInputs(){return [].slice.call(document.querySelectorAll('.qblock input, .qblock textarea'));}
+  bInputs().forEach(function(e){
+    if(e.type==='radio'||e.type==='checkbox'){ if(brief[e.name+'|'+e.value]) e.checked=true; }
+    else if(e.id && brief[e.id]!==undefined) e.value=brief[e.id];
+  });
+  function saveBrief(){
+    var st={};
+    bInputs().forEach(function(e){
+      if(e.type==='radio'||e.type==='checkbox'){ st[e.name+'|'+e.value]=e.checked; }
+      else if(e.id){ st[e.id]=e.value; }
+    });
+    save('mdo_brief',st);
+  }
+  document.addEventListener('change',function(e){ if(e.target.closest&&e.target.closest('.qblock')) saveBrief(); });
+  document.addEventListener('input',function(e){ if(e.target.closest&&e.target.closest('.qblock')) saveBrief(); });
+
+  function val(name){var r=document.querySelector('input[name="'+name+'"]:checked');return r?r.value:'';}
+  function vals(name){return [].map.call(document.querySelectorAll('input[name="'+name+'"]:checked'),function(i){return i.value;});}
+  function txt(id){var e=document.getElementById(id);return e?e.value.trim():'';}
+  function briefText(){
+    var L=['BRIEFING – MDO'];
+    L.push('1. Já vende em algum Marketplace? '+val('q1')+(vals('q1b').length?' | Quais: '+vals('q1b').join(', '):'')+(txt('q1o')?' | Outro: '+txt('q1o'):''));
+    L.push('2. Contas cadastradas em: '+val('q2'));
+    L.push('3. Pedidos por dia: '+txt('q3'));
+    L.push('4. Pretende vender em outros Marketplaces? '+val('q4')+(txt('q4o')?' | Quais: '+txt('q4o'):''));
+    L.push('5. Investe em ADS? '+val('q5')+(txt('q5o')?' | Investimento atual: '+txt('q5o'):''));
+    L.push('6. Investimento diário pretendido: '+txt('q6'));
+    L.push('7. Materiais: '+val('q7')+' | Disponibilidade para produzir: '+val('q7b'));
+    L.push('8. Meta de faturamento mensal: '+txt('q8'));
+    L.push('9. Principal expectativa: '+txt('q9'));
+    L.push('10. Não pode faltar: '+vals('q10').join(', ')+(txt('q10o')?' | Outro: '+txt('q10o'):''));
+    return L.join('\n');
+  }
+  document.getElementById('copyBrief').onclick=function(){
+    var t=briefText(), msg=document.getElementById('copyMsg'), out=document.getElementById('briefOut');
+    var manual=function(){out.style.display='block';out.value=t;out.select();msg.textContent='Selecione o texto abaixo e copie (Ctrl+C ou Cmd+C).';};
+    try{
+      navigator.clipboard.writeText(t).then(function(){msg.textContent='Respostas copiadas. Envie para o seu gestor.';},manual);
+    }catch(e){ manual(); }
+  };
+
+
+  // gestores e clientes salvos (db do artifact; sem db, nada é gravado)
+  (function(){
+    function useNs(n){ try{ return window.claude && claude.use ? claude.use(n) : Promise.resolve(null); }catch(e){ return Promise.resolve(null); } }
+    var gLista=document.getElementById('gLista'), cLista=document.getElementById('cLista');
+    var gMsg=document.getElementById('gMsg'), cMsg=document.getElementById('cMsg'), cGestor=document.getElementById('cGestor');
+    var DB=null, ASSETS=null, gestores={};
+    function safeUrl(u){ return (typeof u==='string' && (u.indexOf('/_blob/')===0 || u.indexOf('https://')===0)) ? u : ''; }
+    function slug(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+    function fmt(ts){ try{ return new Date(ts).toLocaleDateString('pt-BR'); }catch(e){ return ''; } }
+
+    function renderGestores(snap){
+      gestores={}; gLista.textContent=''; cGestor.textContent='';
+      var ids=snap.docs.map(function(d){return d.id;});
+      snap.docs.forEach(function(d){
+        var g=d.data()||{}; gestores[d.id]=g;
+        var card=document.createElement('div'); card.style.cssText='width:150px;text-align:center';
+        var img=document.createElement('img'); img.style.cssText='width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #f50266';
+        var u=safeUrl(g.fotoUrl); if(u) img.src=u; img.alt='';
+        var nm=document.createElement('div'); nm.textContent=g.nome||'Sem nome'; nm.style.cssText='font-weight:700;margin-top:8px;color:#0a0809';
+        card.appendChild(img); card.appendChild(nm); gLista.appendChild(card);
+        var o=document.createElement('option'); o.value=d.id; o.textContent=g.nome||d.id; cGestor.appendChild(o);
+      });
+      if(!ids.length){ gLista.textContent='Nenhum gestor cadastrado ainda.'; }
+    }
+    function renderClientes(snap){
+      cLista.textContent='';
+      if(!snap.docs.length){ cLista.textContent='Nenhum cliente salvo ainda.'; return; }
+      snap.docs.slice().sort(function(a,b){return (b.data().salvoEm||0)-(a.data().salvoEm||0);}).forEach(function(d){
+        var c=d.data()||{};
+        var p=document.createElement('div'); p.style.cssText='padding:8px 0;border-bottom:1px solid #e6e0e3;color:#0a0809';
+        p.textContent=(c.nome||'Sem nome')+' · gestor: '+(c.gestorNome||'—')+' · salvo em '+fmt(c.salvoEm);
+        cLista.appendChild(p);
+      });
+    }
+
+    Promise.all([useNs('db'), useNs('assets')]).then(function(r){
+      DB=r[0]; ASSETS=r[1];
+      if(!DB){
+        gLista.textContent='Cadastros indisponíveis nesta visualização. Abra a página com o login da MDO para salvar.';
+        cLista.textContent=''; return;
+      }
+      DB.collection('gestores').onSnapshot(renderGestores, function(e){ gLista.textContent='Não foi possível carregar os gestores agora.'; });
+      DB.collection('clientes').onSnapshot(renderClientes, function(e){ cLista.textContent='Não foi possível carregar os clientes agora.'; });
+    });
+
+    document.getElementById('gSalvar').onclick=function(){
+      var nome=document.getElementById('gNome').value.trim();
+      var file=document.getElementById('gFoto').files[0];
+      if(!nome){ gMsg.textContent='Informe o nome.'; return; }
+      if(!DB){ gMsg.textContent='Indisponível nesta visualização.'; return; }
+      gMsg.textContent='Salvando…';
+      var up = (file && ASSETS) ? ASSETS.upload(file) : Promise.resolve(null);
+      up.then(function(a){
+        var data={nome:nome, atualizadoEm:Date.now()};
+        if(a){ data.fotoId=a.id; data.fotoUrl=a.url; }
+        return DB.collection('gestores').doc(slug()).set(data);
+      }).then(function(){
+        gMsg.textContent='Gestor salvo.';
+        document.getElementById('gNome').value=''; document.getElementById('gFoto').value='';
+      }).catch(function(){ gMsg.textContent='Não foi possível salvar. Tente de novo.'; });
+    };
+
+    document.getElementById('cSalvar').onclick=function(){
+      var nome=document.getElementById('cNome').value.trim();
+      var gid=cGestor.value;
+      if(!nome){ cMsg.textContent='Informe o nome do cliente.'; return; }
+      if(!DB){ cMsg.textContent='Indisponível nesta visualização.'; return; }
+      var gnome=(gestores[gid]&&gestores[gid].nome)||'';
+      var briefing=load('mdo_brief')||{};
+      var checks=load('mdo_checks')||{};
+      var slot=load('mdo_slot')||'';
+      var brief_txt=''; try{ brief_txt=briefText(); }catch(e){}
+      cMsg.textContent='Salvando…';
+      DB.collection('clientes').doc(slug()).set({
+        nome:nome, gestorId:gid||null, gestorNome:gnome, salvoEm:Date.now(),
+        briefing:briefing, briefingTexto:brief_txt,
+        onboarding:{slot:slot, checks:checks}
+      }).then(function(){
+        cMsg.textContent='Cliente salvo.';
+        document.getElementById('cNome').value='';
+      }).catch(function(){ cMsg.textContent='Não foi possível salvar. Tente de novo.'; });
+    };
+  })();
+
+
+  // painel admin: gestores, clientes e briefings (dados do db)
+  (function(){
+    function useNs(n){ try{ return window.claude && claude.use ? claude.use(n) : Promise.resolve(null); }catch(e){ return Promise.resolve(null); } }
+    var $=function(id){ return document.getElementById(id); };
+    var gestores={}, clientes=[], filtro='all';
+    function safeUrl(u){ return (typeof u==='string' && (u.indexOf('/_blob/')===0 || u.indexOf('https://')===0)) ? u : ''; }
+    function fmt(ts){ try{ return new Date(ts).toLocaleDateString('pt-BR'); }catch(e){ return ''; } }
+    function el(tag,cls,txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+
+    $('admBtn').onclick=function(){ $('adm').hidden=false; };
+    $('admClose').onclick=function(){ $('adm').hidden=true; };
+    $('admBusca').oninput=renderLista;
+    $('admView').onchange=function(){ filtro=this.value; renderAll(); };
+
+    function renderStats(){
+      $('stG').textContent=Object.keys(gestores).length;
+      $('stC').textContent=clientes.length;
+      $('stB').textContent=clientes.filter(function(c){ return c.briefingTexto && c.briefingTexto.length>20; }).length;
+    }
+    function renderGestores(){
+      var box=$('admGestores'); box.textContent='';
+      var todos=el('div','adm-card'+(filtro==='all'?' on':''));
+      var star=el('div','av','★'); star.style.cssText='display:flex;align-items:center;justify-content:center;color:var(--rose);font-size:30px';
+      todos.appendChild(star); todos.appendChild(el('div','n','Todos')); todos.appendChild(el('div','c', clientes.length+' cliente(s)'));
+      todos.onclick=function(){ filtro='all'; renderAll(); };
+      box.appendChild(todos);
+      Object.keys(gestores).forEach(function(id){
+        var g=gestores[id]; var n=clientes.filter(function(c){ return c.gestorId===id; }).length;
+        var card=el('div','adm-card'+(filtro===id?' on':''));
+        var u=safeUrl(g.fotoUrl);
+        if(u){ var img=document.createElement('img'); img.src=u; img.alt=''; card.appendChild(img); }
+        else { card.appendChild(el('div','av','')); }
+        card.appendChild(el('div','n', g.nome||'Sem nome'));
+        card.appendChild(el('div','c', n+' cliente(s)'));
+        card.onclick=function(){ filtro=id; renderAll(); };
+        box.appendChild(card);
+      });
+      if(!Object.keys(gestores).length) box.appendChild(el('div','adm-sub','Nenhum gestor cadastrado ainda.'));
+      var sel=$('admView'); sel.textContent='';
+      var o0=el('option','','Ver: todos os gestores'); o0.value='all'; sel.appendChild(o0);
+      Object.keys(gestores).forEach(function(id){ var o=el('option','', gestores[id].nome||id); o.value=id; sel.appendChild(o); });
+      sel.value=filtro;
+    }
+    function renderLista(){
+      var q=$('admBusca').value.trim().toLowerCase();
+      var box=$('admResultados'); box.textContent='';
+      var lista=clientes.filter(function(c){
+        if(filtro!=='all' && c.gestorId!==filtro) return false;
+        if(q && (c.nome||'').toLowerCase().indexOf(q)<0) return false;
+        return true;
+      }).sort(function(a,b){ return (b.salvoEm||0)-(a.salvoEm||0); });
+      if(!lista.length){ box.appendChild(el('div','adm-sub', q?'Nenhum cliente com esse nome.':'Nenhum cliente nesta visão.')); return; }
+      lista.forEach(function(c){
+        var row=el('div','adm-row');
+        var left=el('div','', c.nome||'Sem nome');
+        left.appendChild(el('small','', ' · gestor: '+(c.gestorNome||'—')+' · salvo em '+fmt(c.salvoEm)));
+        row.appendChild(left);
+        row.appendChild(el('span','adm-sub','Abrir →'));
+        row.onclick=function(){ mostra(c); };
+        box.appendChild(row);
+      });
+    }
+    function mostra(c){
+      var d=$('admDetalhe'); d.hidden=false; d.textContent='';
+      d.appendChild(el('h3','', c.nome||'Sem nome'));
+      d.appendChild(el('div','adm-sub','Gestor: '+(c.gestorNome||'—')+' · Salvo em '+fmt(c.salvoEm)+' · Slot: '+((c.onboarding&&c.onboarding.slot)||'—')));
+      var checks=(c.onboarding&&c.onboarding.checks)||{};
+      var marcados=Object.keys(checks).filter(function(k){ return checks[k]; }).length;
+      d.appendChild(el('div','adm-sub','Checklist do onboarding: '+marcados+' item(ns) marcado(s)'));
+      d.appendChild(el('h3','','Briefing'));
+      d.appendChild(el('pre','', c.briefingTexto || 'Briefing ainda não preenchido.'));
+      d.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+    function renderAll(){ renderStats(); renderGestores(); renderLista(); }
+
+    useNs('db').then(function(db){
+      if(!db){ $('admGestores').textContent='Dados indisponíveis nesta visualização.'; return; }
+      db.collection('gestores').onSnapshot(function(s){ gestores={}; s.docs.forEach(function(d){ gestores[d.id]=d.data()||{}; }); renderAll(); });
+      db.collection('clientes').onSnapshot(function(s){ clientes=s.docs.map(function(d){ var x=d.data()||{}; x._id=d.id; return x; }); renderAll(); });
+    });
+    renderAll();
+  })();
+
+  go(0);
+})();
+</script>
+<button class="adm-open" id="admBtn">Painel admin</button>
+<div class="adm" id="adm" hidden>
+  <div class="adm-top">
+    <div class="adm-brand">MDO · Painel de onboarding</div>
+    <div><select class="adm-sel" id="admView"></select> <button class="adm-x" id="admClose">Fechar</button></div>
+  </div>
+  <div class="adm-body">
+    <h2 id="admHello">Painel do admin</h2>
+    <div class="adm-sub">Gestores, clientes e briefings salvos.</div>
+    <div class="adm-stats">
+      <div class="adm-stat"><b id="stG">0</b>Gestores</div>
+      <div class="adm-stat"><b id="stC">0</b>Clientes salvos</div>
+      <div class="adm-stat"><b id="stB">0</b>Com briefing preenchido</div>
+    </div>
+    <h3>Gestores</h3>
+    <div class="adm-grid" id="admGestores"></div>
+    <h3>Buscar cliente</h3>
+    <input class="adm-input" id="admBusca" placeholder="Digite o nome do cliente">
+    <div id="admResultados" style="margin-top:6px"></div>
+    <div class="adm-det" id="admDetalhe" hidden></div>
+  </div>
+</div>
+</body>
+</html>
